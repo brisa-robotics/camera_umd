@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>uvc_camera</name>
-  <version>0.2.5</version>
+  <version>0.2.4</version>
   <description>
      A collection of node(let)s that stream images from USB cameras (UVC)
      and provide CameraInfo messages to consumers. Includes a
@@ -15,7 +15,6 @@
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
   <maintainer email="ken@tossell.net">Ken Tossell</maintainer>
-  <maintainer email="ros-orphaned-packages@googlegroups.com">ROS Orphaned Package Maintainers</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -60,7 +59,8 @@
   <run_depend>nodelet</run_depend>
   <run_depend>sensor_msgs</run_depend>
   <run_depend>libv4l-dev</run_depend> <!-- should add non-dev package to rosdep -->
-
+  <build_depend>std_srvs</build_depend>
+  <run_depend>std_srvs</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

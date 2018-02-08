@@ -4,6 +4,8 @@
 #include <boost/thread.hpp>
 #include <camera_info_manager/camera_info_manager.h>
 
+#include <std_srvs/SetBool.h>
+
 namespace uvc_camera {
 
 class Camera {
@@ -13,6 +15,10 @@ class Camera {
     void sendInfo(sensor_msgs::ImagePtr &image, ros::Time time);
     void sendInfoJpeg(ros::Time time);
     void feedImages();
+
+
+    bool cameraState(std_srvs::SetBool::Request  &req,
+    		 	     std_srvs::SetBool::Response &res);
     ~Camera();
 
   private:
@@ -29,6 +35,9 @@ class Camera {
     image_transport::Publisher pub;
     ros::Publisher pubjpeg;
     ros::Publisher info_pub;
+
+    bool camera_on;
+    ros::ServiceServer on_off_service;
 
     uvc_cam::Cam *cam;
     boost::thread image_thread;
