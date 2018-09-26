@@ -24,7 +24,7 @@ class Camera {
   private:
     ros::NodeHandle node, pnode;
     image_transport::ImageTransport it;
-    bool ok;
+    bool camera_enabled;
 
     int width, height, fps, skip_frames, frames_to_skip;
     std::string device, frame, format;

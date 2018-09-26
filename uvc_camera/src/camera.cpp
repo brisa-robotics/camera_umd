@@ -1,7 +1,6 @@
 #include <boost/thread.hpp>
 
 #include <ros/ros.h>
-#include <ros/time.h>
 
 #include "uvc_cam/uvc_cam.h"
 #include "sensor_msgs/Image.h"
@@ -60,7 +59,7 @@ Camera::Camera(ros::NodeHandle _comm_nh, ros::NodeHandle _param_nh) :
         pubjpeg = node.advertise<CompressedImage>("image_raw/compressed", 1);
 
       info_pub = node.advertise<CameraInfo>("camera_info", 1);
-      on_off_service = node.advertiseService("camera_switch", &Camera::cameraState,this);
+      on_off_service = pnode.advertiseService("disable", &Camera::cameraState,this);
 
 
 
@@ -194,7 +193,7 @@ Camera::Camera(ros::NodeHandle _comm_nh, ros::NodeHandle _param_nh) :
       //   [(id0, val0, name0), (id1, val1, name1), ...
 
       /* and turn on the streamer */
-      ok = false;
+      camera_enabled = false;
 
     }
 
@@ -229,16 +228,16 @@ Camera::Camera(ros::NodeHandle _comm_nh, ros::NodeHandle _param_nh) :
     }
 
     bool Camera::cameraState(std_srvs::SetBool::Request  &req,
-    		 	             std_srvs::SetBool::Response &res)
+                             std_srvs::SetBool::Response &res)
     {
-      if(req.data!=ok)
+      if(req.data==camera_enabled)
       {
-    	  ok=req.data;
+          camera_enabled=!req.data;
 
-    	  if(ok)
-    	  {
-    		  image_thread = boost::thread(boost::bind(&Camera::feedImages, this));
-    	  }
+          if(camera_enabled)
+          {
+              image_thread = boost::thread(boost::bind(&Camera::feedImages, this));
+          }
       }
 
       res.success=true;
@@ -248,7 +247,7 @@ Camera::Camera(ros::NodeHandle _comm_nh, ros::NodeHandle _param_nh) :
 
     void Camera::feedImages() {
       unsigned int pair_id = 0;
-      while (ok) {
+      while (camera_enabled) {
         unsigned char *img_frame = NULL;
         uint32_t bytes_used;
 
@@ -312,7 +311,7 @@ Camera::Camera(ros::NodeHandle _comm_nh, ros::NodeHandle _param_nh) :
     }
 
     Camera::~Camera() {
-      ok = false;
+      camera_enabled = false;
       image_thread.join();
       if (cam) delete cam;
     }
